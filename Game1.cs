@@ -17,18 +17,25 @@ namespace Game2
     public class Game1 : Game
     {
        
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D hero;
         Texture2D blok_1, blok_2;
+        Texture2D preg_1;
+        Vector2 preg_1_pose = new Vector2();
         Texture2D floor;
         Rectangle hero_pos = new Rectangle(0,450,30,30);
+        Vector2 hero_velocity = new Vector2();
+        int hero_accel = 5;// ускорение
         Vector2 blok_1_pose = new Vector2(180,450);
         Vector2 blok_2_pose = new Vector2(210,420);
         float timeForJump = 0.3f;
-        float time_jump = 0;
+        float time_jump = 0f;
         bool jump = false;
         List<Box> boxs;
+        KeyboardState state;
+        KeyboardState Oldstate = Keyboard.GetState(); 
         
  
       
@@ -37,7 +44,6 @@ namespace Game2
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
            graphics.PreferredBackBufferHeight =  480;
-
             graphics.PreferredBackBufferWidth = 600; 
             
         }
@@ -58,6 +64,7 @@ namespace Game2
             hero = Content.Load<Texture2D>("hero.tif");
             blok_1= Content.Load<Texture2D>("blok_1.jpg");
            blok_2 = Content.Load<Texture2D>("blok_2.png");
+           preg_1 = Content.Load<Texture2D>("Pregg_1.tif");
            Greatemap();
 
         }
@@ -89,9 +96,9 @@ namespace Game2
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  {0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+  {0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0}};
             int x = 0;
             int y = 0;
             for (int i = 0; i < map.GetLength(0); i++)
@@ -103,7 +110,7 @@ namespace Game2
 
                     if (a == 1)
                     {
-                        Box box = new Box(blok_1,rect);
+                        Box box = new Box(preg_1,rect);
                         boxs.Add(box);
                        
 
@@ -126,10 +133,42 @@ namespace Game2
             {
                 hero_pos.X += 2;
 
-                
+             
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                hero_pos.Y -= 2;
+                                  }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                hero_pos.Y += 2;
             }
 
             Greatemap();
+            state = Keyboard.GetState();
+            Oldstate = state;
+            if (state.IsKeyDown(Keys.W))
+            {
+                jump = true;
+                hero_velocity.Y = 15;
+
+            }
+            if (jump)
+            if (hero_velocity.Y > (-15)) {
+               
+                
+                {
+                    hero_velocity.Y = (Int16)hero_velocity.Y - hero_accel;
+                    hero_pos.Y = hero_pos.Y - (Int16)hero_velocity.Y;
+                   
+                }
+        }
+
+              
+            
+          
+       
+            
             base.Update(gameTime);
         }
 
@@ -145,10 +184,11 @@ namespace Game2
             spriteBatch.Draw(hero, hero_pos, Color.White);
             spriteBatch.Draw(blok_1, blok_1_pose, Color.White);
             spriteBatch.Draw(blok_2, blok_2_pose, Color.White);
+            spriteBatch.Draw(preg_1, preg_1_pose, Color.White);
             spriteBatch.End();
           
 
-            base.Draw(gameTime);
+            base.Draw(gameTime); 
         }
     }
 }
